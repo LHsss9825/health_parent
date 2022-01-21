@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qf.mapper.OrderSettingMapper">
+    <insert id="addOrderSetting" parameterType="com.qf.pojo.OrderSetting">
+          insert into t_ordersetting
+          (orderDate,number,reservations)
+                      values
+          (#{orderDate},#{number},#{reservations})
+    </insert>
+
+    <update id="editNumberByOrderDate" parameterType="com.qf.pojo.OrderSetting">
+        update t_ordersetting
+          set number = #{number}
+          where orderDate = #{orderDate}
+    </update>
+
+    <select id="findCountByOrderDate" parameterType="date" resultType="long">
+        select count(id) from t_ordersetting where orderDate = #{orderDate}
+    </select>
+
+    <select id="getOrderSettingByMonth" resultType="com.qf.pojo.OrderSetting">
+        select * from t_ordersetting where orderDate between #{beginDate} and #{endDate}
+    </select>
+
+    <select id="findOrderSettingByOrderDate" parameterType="date" resultType="com.qf.pojo.OrderSetting">
+        select * from t_ordersetting where orderDate = #{orderDate}
+    </select>
+
+    <update id="editReservationsByOrderDate" parameterType="com.qf.pojo.OrderSetting">
+        update t_ordersetting
+        set reservations = #{reservations}
+        where orderDate = #{orderDate}
+    </update>
+</mapper>

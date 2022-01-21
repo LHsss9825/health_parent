@@ -1,0 +1,84 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qf.mapper.CheckGroupMapper">
+    <insert id="add" parameterType="com.qf.pojo.CheckGroup">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into t_checkgroup(code,name,sex,helpCode,remark,attention)
+        values
+        (#{code},#{name},#{sex},#{helpCode},#{remark},#{attention})
+    </insert>
+
+
+    <insert id="addCheckGroupCheckItem">
+        insert into t_checkgroup_checkitem(checkgroup_id,checkitem_id)
+        values
+        (#{checkgroupId},#{checkitemId})
+    </insert>
+
+    <select id="findPage" parameterType="com.qf.entity.QueryPageBean" resultType="com.qf.pojo.CheckGroup">
+         select * from t_checkgroup
+         <if test="queryString!=null and queryString!=''">
+             where code=#{queryString} or name=#{queryString} or helpCode=#{queryString}
+         </if>
+         order by id desc
+    </select>
+
+    <select id="findById" parameterType="integer" resultType="com.qf.pojo.CheckGroup">
+        select * from t_checkgroup where id=#{id}
+    </select>
+
+    <select id="findCheckItemIdsByCheckGroupId" parameterType="integer" resultType="integer">
+        select checkitem_id from t_checkgroup_checkitem where checkgroup_id=#{id}
+    </select>
+
+    <select id="edit" parameterType="com.qf.pojo.CheckGroup">
+        update t_checkgroup
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="helpCode != null">
+                helpCode = #{helpCode},
+            </if>
+            <if test="attention != null">
+                attention = #{attention},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </select>
+
+    <delete id="deleteCheckGroupCheckItemByCheckGroupId" parameterType="integer">
+        delete from t_checkgroup_checkitem where checkgroup_id=#{id}
+    </delete>
+
+    <select id="findAll" resultType="com.qf.pojo.CheckGroup">
+        select * from t_checkgroup
+    </select>
+
+    <resultMap id="findCheckGroupBySetmealIdResultMap" type="com.qf.pojo.CheckGroup">
+        <id column="id" property="id"></id>
+        <result column="code" property="code"></result>
+        <result column="name" property="name"></result>
+        <result column="helpCode" property="helpCode"></result>
+        <result column="sex" property="sex"></result>
+        <result column="remark" property="remark"></result>
+        <result column="attention" property="attention"></result>
+        <collection property="checkItems" ofType="com.qf.pojo.CheckItem" column="id" select="com.qf.mapper.CheckItemMapper.findCheckItemByCheckGroupId"></collection>
+    </resultMap>
+    <select id="findCheckGroupBySetmealId" parameterType="integer" resultMap="findCheckGroupBySetmealIdResultMap">
+        select * from t_checkgroup where id in(
+            select checkgroup_id from t_setmeal_checkgroup where setmeal_id=#{id}
+        )
+    </select>
+</mapper>

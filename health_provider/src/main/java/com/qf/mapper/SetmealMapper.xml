@@ -1,0 +1,50 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qf.mapper.SetmealMapper">
+    <insert id="add" parameterType="com.qf.pojo.Setmeal">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into t_setmeal(code,name,sex,helpCode,remark,attention,age,price,img)
+        values
+        (#{code},#{name},#{sex},#{helpCode},#{remark},#{attention},#{age},#{price},#{img})
+    </insert>
+
+
+    <insert id="addSetmeatCheckGroup">
+        insert into t_setmeal_checkgroup(setmeal_id,checkgroup_id)
+        values
+        (#{id},#{checkgroupId})
+    </insert>
+
+    <select id="findPage" parameterType="com.qf.entity.QueryPageBean" resultType="com.qf.pojo.Setmeal">
+         select * from t_setmeal
+         <if test="queryString!=null and queryString!=''">
+             where code=#{queryString} or name=#{queryString} or helpCode=#{queryString}
+         </if>
+         order by id desc
+    </select>
+
+    <select id="getAllSetmeal" resultType="com.qf.pojo.Setmeal">
+        select * from t_setmeal
+    </select>
+
+    <resultMap id="findByIdResultMap" type="com.qf.pojo.Setmeal">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="code" property="code"></result>
+        <result column="helpCode" property="helpCode"></result>
+        <result column="sex" property="sex"></result>
+        <result column="age" property="age"></result>
+        <result column="price" property="price"></result>
+        <result column="remark" property="remark"></result>
+        <result column="attention" property="attention"></result>
+        <result column="img" property="img"></result>
+        <collection property="checkGroups" ofType="com.qf.pojo.CheckGroup" column="id" select="com.qf.mapper.CheckGroupMapper.findCheckGroupBySetmealId"></collection>
+
+    </resultMap>
+
+    <select id="findById" parameterType="integer" resultMap="findByIdResultMap">
+        select * from t_setmeal where id=#{id}
+    </select>
+</mapper>
